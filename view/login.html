@@ -1,0 +1,10 @@
+{{define "login"}}
+<h1>LOGIN</h1>
+<form method="POST" action="/login">
+    <p>email: <input type="text" name="email" /></p>
+    <p>パスワード: <input type="password" name="password" /></p>
+    <p><input type="submit" value="ログイン" />
+        <a href="/"><input type="button" value="戻る" /></a>
+    </p>
+</form>
+{{end}}
