@@ -56,11 +56,11 @@ func (u *usecase)GetHome(c echo.Context) error {
 
 	fmt.Println(user)
 
-	// err =  c.Render(http.StatusOK, "home", map[string]interface{}{"user": user}); 
-	// if err != nil {
-	// 	fmt.Println(err)
-	// 	return err
-	// }
+	err =  c.Render(http.StatusOK, "home", map[string]interface{}{"user": user}); 
+	if err != nil {
+		fmt.Println(err)
+		return err
+	}
 	return nil
 	
 }
@@ -83,11 +83,16 @@ func (u *usecase)PostSignup(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, err.Error())
 	}
 	user.Email = c.Request().PostFormValue("email")
+	err := u.i.GetUserByEmail(&user, user.Email)
+	if err == nil {
+		c.Redirect(http.StatusFound, "signup")
+	}
+
 	user.Password = c.Request().PostFormValue("password")
 
 	user.ID = uuid.New().String()
 	
-	err := u.i.CreateUser(&user)
+	err = u.i.CreateUser(&user)
 	if err != nil {
 		c.Redirect(301, "/signup")
 		return nil
@@ -103,7 +108,7 @@ func (u *usecase)PostLogin(c echo.Context) error {
 	storeUser := entity.User{}
 	 err := u.i.GetUserByEmail(&storeUser, email)
 	if err != nil {
-		return err
+		c.Redirect(http.StatusFound, "/login")
 	}
 	pass := storeUser.Password
 
