@@ -3,9 +3,13 @@ package router
 import (
 	"html/template"
 	"io"
+	"net/http"
+
+	"os"
 
 	"github.com/labstack/echo/v4"
-	
+
+	"github.com/yamato0204/go-up/app/infra"
 	"github.com/yamato0204/go-up/app/usecase"
 )
 
@@ -28,7 +32,13 @@ func GetRouter(u usecase.Usecase) *echo.Echo {
 
 	e.Renderer = renderer
 
-	e.GET("/", usecase.GetTop)
+	// loginCheck := e.Group("/")
+	// loginCheck.Use(checkLogin())
+
+	// loginCheck.GET("/h", u.GetHome)
+
+    e.GET("/home", u.GetHome)
+	e.GET("/top", usecase.GetTop)
 	e.GET("/signup", usecase.GetSignup)
 	
 	e.GET("/login", usecase.GetLogin)
@@ -37,4 +47,23 @@ func GetRouter(u usecase.Usecase) *echo.Echo {
 
 
 	return e
+}
+
+func checkLogin()echo.MiddlewareFunc {
+	return func(next echo.HandlerFunc) echo.HandlerFunc {
+		return func(c echo.Context) error {
+	cookieKey := os.Getenv("LOGIN_USER_ID_KEY")
+	id, err := infra.GetSession(c, cookieKey)
+	if err != nil {
+		return err
+	}
+	if id == "" {
+			c.Redirect(http.StatusFound, "/login")
+		} else {
+			//c.NoContent(http.StatusOK)
+		}
+		return next(c)
+    }
+}
+	
 }
