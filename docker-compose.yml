@@ -6,6 +6,7 @@ services:
       dockerfile: Dockerfile
     depends_on:
       - db
+      - redis
     container_name: go
     ports:
       - "8080:8080"
@@ -29,6 +30,11 @@ services:
      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     volumes:
       - ./db/initdb.d:/docker-entrypoint-initdb.d/
+  redis:
+    container_name: redis
+    image: redis:latest
+    ports:
+      - 6379:6379
 
 networks:
  default:
