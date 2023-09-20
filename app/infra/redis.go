@@ -71,3 +71,20 @@ func GetSession(c echo.Context, CookieKey string)(string, error) {
 	
 		
 }
+
+
+func DeleteSession(c echo.Context, cookieKey string)   {
+
+cookie, _ := c.Cookie(cookieKey)
+
+redisId := cookie.Value
+
+	conn.Del(conn.Context(), redisId)
+	//c.SetCookie(cookieKey, "", -1, "/", "localhost", false, false)
+
+	cookie = new(http.Cookie)
+	cookie.Name = cookieKey
+	cookie.Value = ""
+	cookie.Expires = time.Now()
+ c.SetCookie(cookie)
+}

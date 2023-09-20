@@ -19,6 +19,7 @@ type Usecase interface {
 	PostLogin(c echo.Context)error
 	GetHome(c echo.Context) error
 	Auth(c echo.Context, userID string) (entity.User, error)
+	Logout(c echo.Context) error
 }
 
 type usecase struct {
@@ -123,6 +124,19 @@ func (u *usecase)PostLogin(c echo.Context) error {
 	return nil
 }
 
+func (u *usecase)Logout(c echo.Context) error{
+
+	cookieKey := os.Getenv("LOGIN_USER_ID_KEY")
+	infra.DeleteSession(c, cookieKey)
+	if err := c.Redirect(http.StatusFound, "/home"); err != nil {
+		fmt.Println(err)
+		return err
+	}
+
+	return nil
+}
+
+
 func (u *usecase)Auth(c echo.Context, userID string ) (entity.User, error) {
 	 user := entity.User{}
 	 err := u.i.GetOneUser(&user, userID);
@@ -133,11 +147,8 @@ func (u *usecase)Auth(c echo.Context, userID string ) (entity.User, error) {
 	 return user, err
 		
 	}
-
 	
 	return user, nil
-		
-	
 		
 	}
 

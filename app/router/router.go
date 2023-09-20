@@ -44,6 +44,7 @@ func GetRouter(u usecase.Usecase) *echo.Echo {
 	e.GET("/login", usecase.GetLogin)
 	e.POST("/signup", u.PostSignup)
 	e.POST("login", u.PostLogin )
+	e.GET("/logout", u.Logout)
 
 
 	return e
