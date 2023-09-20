@@ -23,8 +23,6 @@ func NewInfra(db *gorm.DB) Infra {
 }
 
 
-
-
 func  (i *infra)CreateUser(user *entity.User) error {
 	if err := i.db.Create(user).Error; err != nil {
 		return err
